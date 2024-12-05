@@ -1,0 +1,37 @@
+import mysql.connector
+
+# Configuração de conexão com o banco
+db_config = {
+    'host': '192.168.0.100',  
+    'user': 'admin_user',       
+    'password': 'password_user', 
+    'database': 'plantio'
+}
+
+# Conectar ao banco de dados
+connection = mysql.connector.connect(**db_config)
+cursor = connection.cursor()
+
+# Criar tabela (execute uma vez)
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS dados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    temperature FLOAT,
+    humidity FLOAT,
+    light_value INT,
+    status VARCHAR(50),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+''')
+
+# Função para salvar dados
+def salvar_dados(temperature, humidity, light_value, status):
+    cursor.execute('''
+    INSERT INTO dados (temperature, humidity, light_value, status)
+    VALUES (%s, %s, %s, %s)
+    ''', (temperature, humidity, light_value, status))
+    connection.commit()
+
+# Exemplo de uso
+salvar_dados(25.5, 60.0, 3500, "Bom para plantio")
+print("Dados salvos com sucesso!")
