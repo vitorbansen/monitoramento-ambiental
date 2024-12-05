@@ -4,8 +4,8 @@ import network
 from machine import Pin, ADC
 
 # Configurações do Wi-Fi 
-SSID = 'TesteWiFi'  
-PASSWORD = 'SenhaFicticia123'  
+SSID = 'NET_VIRTUA_5G'  
+PASSWORD = '4788135267'  
 
 # Conecta ao Wi-Fi (pode ser comentado se não for usar)
 def connect_to_wifi():
