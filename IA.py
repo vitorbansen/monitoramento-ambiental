@@ -8,28 +8,56 @@ dht_sensor = dht.DHT11(Pin(2))
 light_sensor = ADC(Pin(34))  # Sensor de luminosidade
 light_sensor.atten(ADC.ATTN_11DB)
 
-# Função para verificar condições de plantio
-def is_good_for_planting(temperature, humidity, light_value):
-    # Condições ideais iniciais
-    if 20 <= temperature <= 30 and 50 <= humidity <= 70 and light_value >= 2000:
+# Função para avaliar condições de plantio usando lógica fuzzy simples
+def fuzzy_evaluation(temperature, humidity, light_value):
+    
+    if temperature < 20:
+        temp_score = "Baixa"
+    elif 20 <= temperature <= 30:
+        temp_score = "Ideal"
+    else:
+        temp_score = "Alta"
+
+    
+    if humidity < 50:
+        humidity_score = "Baixa"
+    elif 50 <= humidity <= 70:
+        humidity_score = "Ideal"
+    else:
+        humidity_score = "Alta"
+
+    
+    if light_value < 2000:
+        light_score = "Baixa"
+    else:
+        light_score = "Boa"
+
+    
+    if temp_score == "Ideal" and humidity_score == "Ideal" and light_score == "Boa":
         return "Bom para plantio"
-    return "Não adequado"
+    else:
+        return "Não adequado"
 
-# Loop principal
+
 while True:
-    dht_sensor.measure()
-    temperature = dht_sensor.temperature()
-    humidity = dht_sensor.humidity()
-    light_value = light_sensor.read()
+    try:
+        dht_sensor.measure()
+        temperature = dht_sensor.temperature()
+        humidity = dht_sensor.humidity()
+        light_value = light_sensor.read()
 
-    status = is_good_for_planting(temperature, humidity, light_value)
+        # Avaliação fuzzy
+        status = fuzzy_evaluation(temperature, humidity, light_value)
 
-    print(f"Temperatura: {temperature}°C, Umidade: {humidity}%, Luminosidade: {light_value}")
-    print(f"Condição: {status}")
+        print(f"Temperatura: {temperature}°C, Umidade: {humidity}%, Luminosidade: {light_value}")
+        print(f"Condição: {status}")
 
-    # Simule envio para um servidor ou salve os dados localmente
-    # Exemplo: salvar em arquivo
-    with open("dados_plantio.csv", "a") as f:
-        f.write(f"{temperature},{humidity},{light_value},{status}\n")
+        
+        with open("dados_plantio.csv", "a") as f:
+            f.write(f"{temperature},{humidity},{light_value},{status}\n")
 
-    time.sleep(5)
+        time.sleep(5)
+
+    except Exception as e:
+        print("Erro ao coletar dados:", e)
+        time.sleep(5)
